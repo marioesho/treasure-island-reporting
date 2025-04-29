@@ -25,17 +25,23 @@ export class FetchEmailsComponent {
   async fetchData() {
     this.loading = true;
     try {
-      const messages = await this.gmailService.listEmailsWithAttachments();
-      let allParsedData: any[] = [];
+      const messages = (await this.gmailService.getGmailEmails()).messages;
+      console.log(messages);
+      const messageDetails = await this.gmailService.getMessageDetails(messages[0].id);
+      console.log(messageDetails);
+      const messageAttachment = await this.gmailService.getAttachment(messageDetails);
+      console.log(messageAttachment);
 
-      for (const message of messages) {
-        const blob = await this.gmailService.getAttachment(message.id);
-        const parsed = await this.csvParserService.parseCsv(blob);
-        allParsedData = allParsedData.concat(parsed);
-      }
+      // let allParsedData: any[] = [];
 
-      this.reportService.setData(allParsedData);
-      this.filteredData = allParsedData;
+      // for (const message of messages) {
+      //   const blob = await this.gmailService.getAttachment(message.id);
+      //   const parsed = await this.csvParserService.parseCsv(blob);
+      //   allParsedData = allParsedData.concat(parsed);
+      // }
+
+      // this.reportService.setData(allParsedData);
+      // this.filteredData = allParsedData;
     } catch (error) {
       console.error(error);
     } finally {
