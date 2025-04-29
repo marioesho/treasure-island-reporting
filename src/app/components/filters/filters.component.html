@@ -1,1 +1,31 @@
-<input placeholder="Keyword">
+<div class="flex-container flex-direction-column">
+  <div class="flex-item flex-item-large">
+    <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
+      <mat-form-field>
+        <mat-label>Enter a date range</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate placeholder="Start date" formControlName="startDate">
+          <input matEndDate placeholder="End date" formControlName="endDate">
+        </mat-date-range-input>
+        <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+
+        @if (filterForm.controls['startDate'].hasError('matDatepickerParse')) {
+          <mat-error>Invalid start date</mat-error>
+        } @else if (filterForm.controls['startDate'].hasError('required')) {
+          <mat-error>Start date is required</mat-error>
+        }
+        @if (filterForm.controls['endDate'].hasError('matDatepickerParse')) {
+          <mat-error>Invalid end date</mat-error>
+        } @else if (filterForm.controls['endDate'].hasError('required')) {
+          <mat-error>End date is required</mat-error>
+        }
+      </mat-form-field>
+    </form>
+  </div>
+
+  <div class="flex-item">
+    <button mat-raised-button color="primary" type="submit" [disabled]="filterForm.invalid">Submit</button>
+  </div>
+</div>

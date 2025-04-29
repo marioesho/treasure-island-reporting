@@ -1,6 +1,7 @@
-<button (click)="fetchData()">Fetch CSV Attachments</button>
+<!-- <button (click)="fetchData()">Fetch CSV Attachments</button>
 <div *ngIf="loading">Loading...</div>
 <div *ngIf="!loading">
   <app-filters (filterChanged)="onFilterChanged($event)"></app-filters>
   <app-report [data]="filteredData"></app-report>
-</div>
+</div> -->
+<app-filters (filterChanged)="onFilterChanged($event)"></app-filters>

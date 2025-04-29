@@ -8,3 +8,5 @@
 - create interfaces
 - add guards for login and update routing
 - add github actions pipelins
+- create directive flex container
+- should I do onpush change detection?
