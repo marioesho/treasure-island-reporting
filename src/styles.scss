@@ -3,6 +3,10 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+.width-100 {
+  width: 100%;
+}
+
 .flex-container {
   display: flex;
   gap: 10px;
