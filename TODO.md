@@ -11,3 +11,6 @@
 - add github actions pipelins
 - create directive flex container
 - should I do onpush change detection?
+- add currency pipe ` | currency`
+- add loading check in report that passes to parent, could use model https://angular.dev/guide/components/inputs#model-inputs
+- add flex box on dashboard
