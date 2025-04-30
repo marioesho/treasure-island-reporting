@@ -1,9 +1,11 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, output } from '@angular/core';
 import { FormGroup, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatButtonModule } from '@angular/material/button';
+
+import { Filters } from '@models';
 
 @Component({
   selector: 'app-filters',
@@ -13,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './filters.component.scss'
 })
 export class FiltersComponent {
-  @Output() formSubmit = new EventEmitter<{ startDate: Date, endDate: Date }>();
+  filters = output<Filters>();
 
   public filterForm: FormGroup;
 
@@ -25,6 +27,6 @@ export class FiltersComponent {
   }
 
   onSubmit() {
-    this.formSubmit.emit(this.filterForm.value);
+    this.filters.emit(this.filterForm.value);
   }
 }

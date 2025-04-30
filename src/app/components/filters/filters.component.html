@@ -1,6 +1,6 @@
-<div class="flex-container flex-direction-column">
-  <div class="flex-item flex-item-large">
-    <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
+  <div class="flex-container flex-direction-column">
+    <div class="flex-item flex-item-large">
       <mat-form-field>
         <mat-label>Enter a date range</mat-label>
         <mat-date-range-input [rangePicker]="picker">
@@ -22,10 +22,10 @@
           <mat-error>End date is required</mat-error>
         }
       </mat-form-field>
-    </form>
-  </div>
+    </div>
 
-  <div class="flex-item">
-    <button mat-raised-button color="primary" type="submit" [disabled]="filterForm.invalid">Submit</button>
+    <div class="flex-item">
+      <button mat-raised-button color="primary" type="submit" [disabled]="filterForm.invalid">Submit</button>
+    </div>
   </div>
-</div>
+</form>

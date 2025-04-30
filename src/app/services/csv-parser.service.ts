@@ -5,9 +5,9 @@ import Papa from 'papaparse';
   providedIn: 'root'
 })
 export class CsvParserService {
-  parseCsv(blob: Blob): Promise<any[]> {
+  parseCsv(csvText: string): Promise<any[]> {
     return new Promise(async (resolve, reject) => {
-      Papa.parse(await blob.text(), {
+      Papa.parse(csvText, {
         header: true,
         skipEmptyLines: true,
         complete: (results) => resolve(results.data),

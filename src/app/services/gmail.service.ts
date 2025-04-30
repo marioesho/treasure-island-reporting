@@ -3,6 +3,7 @@ import { formatDate } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
+import { Filters, Emails, MessagePartBody } from '@models';
 import { AuthGoogleService } from './auth-google.service';
 
 @Injectable({
@@ -16,10 +17,10 @@ export class GmailService {
    * @returns
    * @apidoc https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list
    */
-  async getEmails(): Promise<{ messages: { id: string, threadId: string }[], resultSizeEstimate: number }> {
+  async getEmails(filters: Filters): Promise<Emails> {
     // this endpoint only lists 100 messages at a time
-    const after = formatDate(new Date('4/25/25'), 'YYYY/MM/dd', this.locale);
-    const before = formatDate(new Date('4/29/25'), 'YYYY/MM/dd', this.locale);
+    const after = formatDate(filters.startDate, 'YYYY/MM/dd', this.locale);
+    const before = formatDate(filters.endDate, 'YYYY/MM/dd', this.locale);
     const params = new HttpParams({
       fromObject: {
         // can use in:drafts if needing to search within folder
@@ -29,7 +30,7 @@ export class GmailService {
     const apiUrl = 'https://www.googleapis.com/gmail/v1/users/me/messages';
     const headers = { Authorization: `Bearer ${this.authGoogleService.getAccessToken}` };
 
-    return firstValueFrom(this.http.get<{ messages: { id: string, threadId: string }[], resultSizeEstimate: number }>(apiUrl, { headers, params }));
+    return firstValueFrom(this.http.get<Emails>(apiUrl, { headers, params }));
   }
 
   /**
@@ -51,7 +52,7 @@ export class GmailService {
    * @returns
    * @apidoc https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages.attachments/get
    */
-  async getAttachment(message: any): Promise<string> {
+  async getAttachment(message: any): Promise<MessagePartBody> {
     const attachmentPart = message.payload.parts.find((part: any) => part.filename && part.filename.startsWith('Sales_History') && part.filename.endsWith('.csv'));
 
     if (!attachmentPart) throw new Error(`No CSV attachments found for message subject: ${this.extractSubject(message.payload.headers)}.`);
@@ -63,15 +64,7 @@ export class GmailService {
     const apiUrl = `https://www.googleapis.com/gmail/v1/users/me/messages/${message.id}/attachments/${attachmentId}`;
     const headers = { Authorization: `Bearer ${this.authGoogleService.getAccessToken}` };
 
-    const messagePartBody = await firstValueFrom(this.http.get<{
-      "attachmentId": string,
-      "size": number,
-      "data": string
-    }>(apiUrl, { headers }));
-
-    if (!messagePartBody.data) throw new Error(`No attachment data found for message subject: ${this.extractSubject(message.payload.headers)}.`)
-
-    return atob(messagePartBody.data.replace(/-/g, '+').replace(/_/g, '/'));
+    return await firstValueFrom(this.http.get<MessagePartBody>(apiUrl, { headers }));
   }
 
   private extractSubject(headers: any[]): string {

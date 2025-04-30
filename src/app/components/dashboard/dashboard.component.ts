@@ -1,54 +1,44 @@
 import { NgIf } from '@angular/common';
 import { Component } from '@angular/core';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
-import { GmailService, CsvParserService, ReportService } from '@services';
+import { Filters, ReportItem } from '@models';
+import { GmailService, CsvParserService } from '@services';
 import { FiltersComponent } from '../filters/filters.component';
 import { ReportComponent } from '../report/report.component';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [NgIf, FiltersComponent, ReportComponent],
+  imports: [NgIf, FiltersComponent, ReportComponent, MatProgressBarModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent {
-  loading = false;
-  filteredData: any[] = [];
+  public loading = false;
+  public totalEmails: number = 0;
+  public emailIndex: number = 0;
+  public data?: ReportItem[];
 
   constructor(
     private gmailService: GmailService,
-    private csvParserService: CsvParserService,
-    private reportService: ReportService
+    private csvParserService: CsvParserService
   ) {}
 
-  async fetchData() {
+  async getReport(filters: Filters): Promise<void> {
     this.loading = true;
-    try {
-      const messages = (await this.gmailService.getEmails()).messages;
-      console.log(messages);
-      const messageDetails = await this.gmailService.getMessageDetails(messages[0].id);
-      console.log(messageDetails);
-      const messageAttachment = await this.gmailService.getAttachment(messageDetails);
-      console.log(messageAttachment);
 
-      // let allParsedData: any[] = [];
+    const emails = await this.gmailService.getEmails(filters);
+    this.totalEmails = emails.resultSizeEstimate;
 
-      // for (const message of messages) {
-      //   const blob = await this.gmailService.getAttachment(message.id);
-      //   const parsed = await this.csvParserService.parseCsv(blob);
-      //   allParsedData = allParsedData.concat(parsed);
-      // }
+    // TODO: what is returned when no emails are found
+    emails.messages.forEach(async (message, index) => {
+      this.emailIndex = index + 1;
+      const messageDetails = await this.gmailService.getMessageDetails(message.id);
+      const attachment = await this.gmailService.getAttachment(messageDetails);
+      const csvText = atob(attachment.data.replace(/-/g, '+').replace(/_/g, '/'));
+      this.data = await this.csvParserService.parseCsv(csvText);
+    });
 
-      // this.reportService.setData(allParsedData);
-      // this.filteredData = allParsedData;
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.loading = false;
-    }
-  }
-
-  onFilterChanged(filters: any) {
-    this.filteredData = this.reportService.getFilteredData(filters);
+    this.loading = false;
   }
 }

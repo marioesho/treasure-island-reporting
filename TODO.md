@@ -5,6 +5,7 @@
   - remove billing account
   - remove unneeded projects
 - create nice errors
+ - create a banner with failed messages
 - create interfaces
 - add guards for login and update routing
 - add github actions pipelins
