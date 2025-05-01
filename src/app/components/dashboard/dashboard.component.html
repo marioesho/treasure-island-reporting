@@ -1,7 +1,2 @@
-<app-filters (filters)="getReport($event)"></app-filters>
-<div *ngIf="data">
-  <app-report [data]="data"></app-report>
-</div>
-<div *ngIf="loading">
-  <mat-progress-bar mode="determinate" [value]="totalEmails - emailIndex"></mat-progress-bar>
-</div>
+<app-filters (filters)="filters = $event"></app-filters>
+<app-report *ngIf="filters" [filters]="filters"></app-report>

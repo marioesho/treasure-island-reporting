@@ -14,3 +14,5 @@
 - add currency pipe ` | currency`
 - add loading check in report that passes to parent, could use model https://angular.dev/guide/components/inputs#model-inputs
 - add flex box on dashboard
+- on table page chage, recalulate totals
+- maybe add department totals as seperate
