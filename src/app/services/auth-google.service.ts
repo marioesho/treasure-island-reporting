@@ -1,22 +1,12 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthGoogleService {
-  public profile = signal<object | null>(null);
-
   constructor(private oAuthService: OAuthService, private router: Router) {
-    this.initConfiguration();
-  }
-
-  get getAccessToken() {
-    return this.oAuthService.getAccessToken();
-  }
-
-  initConfiguration() {
     this.oAuthService.configure({
       issuer: 'https://accounts.google.com',
       redirectUri: window.location.origin,
@@ -25,11 +15,18 @@ export class AuthGoogleService {
       strictDiscoveryDocumentValidation: false,
     });
     this.oAuthService.setupAutomaticSilentRefresh();
-    this.oAuthService.loadDiscoveryDocumentAndTryLogin().then(() => {
-      if (this.oAuthService.hasValidIdToken()) {
-        this.profile.set(this.oAuthService.getIdentityClaims());
-      }
-    });
+  }
+
+  get getAccessToken() {
+    return this.oAuthService.getAccessToken();
+  }
+
+  async loadDiscoveryDocumentAndTryLogin(): Promise<boolean> {
+    return this.oAuthService.loadDiscoveryDocumentAndTryLogin();
+  }
+
+  isValidUser(): boolean {
+    return this.oAuthService.hasValidAccessToken() && this.oAuthService.hasValidIdToken();
   }
 
   login() {
@@ -39,11 +36,6 @@ export class AuthGoogleService {
   logout() {
     this.oAuthService.revokeTokenAndLogout();
     this.oAuthService.logOut();
-    this.profile.set(null);
     this.router.navigateByUrl('/');
-  }
-
-  getProfile() {
-    return this.profile();
   }
 }

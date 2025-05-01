@@ -16,3 +16,6 @@
 - add flex box on dashboard
 - on table page chage, recalulate totals
 - maybe add department totals as seperate
+- add interceptor or oauth provider has allowed urls that it intercepts `node_modules/angular-oauth2-oidc/oauth-module.config.d.ts`
+- add nav bar
+- logout doesn't work but do we need it?
