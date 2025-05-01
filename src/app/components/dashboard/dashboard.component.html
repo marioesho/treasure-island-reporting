@@ -1,2 +1,4 @@
-<app-filters (filters)="filters = $event"></app-filters>
-<app-report *ngIf="filters" [filters]="filters"></app-report>
+<div class="flex-container flex-direction-column">
+  <app-filters class="flex-item" (filters)="filters = $event"></app-filters>
+  <app-report class="flex-item" *ngIf="filters" [filters]="filters"></app-report>
+</div>
