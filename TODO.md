@@ -4,19 +4,14 @@
   - make sure to remove projects from billing
   - remove billing account
   - remove unneeded projects
-- add error banner with missing daily reports
-- create interfaces
-- add guards for login and update routing
 - add github actions pipelins
 - create directive flex container
 - should I do onpush change detection?
 - add currency pipe ` | currency`
-- add loading check in report that passes to parent, could use model https://angular.dev/guide/components/inputs#model-inputs
-- add flex box on dashboard
-- on table page chage, recalulate totals
 - maybe add department totals as seperate
 - add interceptor or oauth provider has allowed urls that it intercepts `node_modules/angular-oauth2-oidc/oauth-module.config.d.ts`
 - add nav bar
-- logout doesn't work but do we need it?
+  - logout doesn't work but do we need it?
 - filter validation, no more than 100 days
-- how many reports calculated
+- count of how many reports calculated
+- should probably use date in filename instead of email date for finding missing reports

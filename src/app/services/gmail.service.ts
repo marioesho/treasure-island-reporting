@@ -1,11 +1,11 @@
-import { Inject, Injectable, LOCALE_ID } from '@angular/core';
-import { formatDate } from '@angular/common';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 import { Filters, Emails, Message, Attachment } from '@models';
 import { AuthGoogleService } from './auth-google.service';
 import { ErrorHandlerService } from './error-handler.service';
+import { DateService } from './date.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +14,8 @@ export class GmailService {
   constructor(
     private authGoogleService: AuthGoogleService,
     private http: HttpClient,
-    private errorHandlerService: ErrorHandlerService,
-    @Inject(LOCALE_ID) private locale: string) {}
+    private dateService: DateService,
+    private errorHandlerService: ErrorHandlerService) {}
 
   /**
    * this endpoint only lists 100 messages at a time
@@ -24,8 +24,8 @@ export class GmailService {
    */
   async getEmails(filters: Filters): Promise<Emails> {
     try {
-      const after = formatDate(filters.startDate, 'YYYY/MM/dd', this.locale);
-      const before = formatDate(filters.endDate.setDate(filters.endDate.getDate() + 1), 'YYYY/MM/dd', this.locale);
+      const after = this.dateService.formatDate(filters.startDate, 'YYYY/MM/dd');
+      const before = this.dateService.formatDate(this.dateService.addDays(filters.endDate, 1), 'YYYY/MM/dd');
       const params = new HttpParams({
         fromObject: {
           // can use in:drafts if needing to search within folder
@@ -47,7 +47,7 @@ export class GmailService {
    * @returns
    * @apidoc https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/get
    */
-  async getMessage(messageId: string): Promise<Message> {
+  async getMessageDetails(messageId: string): Promise<Message> {
     try {
       const apiUrl = `https://www.googleapis.com/gmail/v1/users/me/messages/${messageId}`;
       const headers = { Authorization: `Bearer ${this.authGoogleService.getAccessToken}` };

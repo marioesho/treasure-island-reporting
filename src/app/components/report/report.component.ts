@@ -8,7 +8,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 import { Filters, ReportItem } from '@models';
-import { GmailService, CsvParserService } from '@services';
+import { GmailService, ReportService, DateService } from '@services';
 
 @Component({
   selector: 'app-report',
@@ -39,7 +39,8 @@ export class ReportComponent {
 
   constructor(
     private gmailService: GmailService,
-    private csvParserService: CsvParserService
+    private reportService: ReportService,
+    private dateService: DateService
   ) {
     effect(() => this.getReport(this.filters()));
     effect(() => {
@@ -65,6 +66,7 @@ export class ReportComponent {
     this.loading = true;
     this.errors.set([]);
     const dataMap = new Map<string, ReportItem>();
+    const reportDates = new Map<string, Date>();
 
     try {
       const emails = await this.gmailService.getEmails(filters);
@@ -73,12 +75,21 @@ export class ReportComponent {
         try {
           this.progress = ((index + 1) / emails.resultSizeEstimate) * 100;
 
-          const messageDetails = await this.gmailService.getMessage(message.id);
+          const messageDetails = await this.gmailService.getMessageDetails(message.id);
           const attachment = await this.gmailService.getAttachment(messageDetails);
-          const csvText = atob(attachment.data.replace(/-/g, '+').replace(/_/g, '/'));
-          const reportItems = await this.csvParserService.parseCsv(csvText);
 
-          this.aggregateReportItems(reportItems, dataMap);
+          const messageDate = new Date(Number(messageDetails.internalDate));
+          const messageLocalDate = messageDate.toLocaleDateString();
+          if (reportDates.has(messageLocalDate)) {
+            this.errors.update(errors => [...errors, `Multiple reports found for ${messageLocalDate}. Ignoring duplicate...`]);
+            continue;
+          }
+          reportDates.set(messageLocalDate, messageDate);
+
+          const csvText = atob(attachment.data.replace(/-/g, '+').replace(/_/g, '/'));
+          const reportItems = await this.reportService.parseCsv(csvText);
+
+          this.reportService.aggregateReportItems(reportItems, dataMap);
         } catch (error) {
           this.errors.update(errors => [...errors, `Failed to process message ID: "${message.id}". ${error}`]);
         }
@@ -86,6 +97,7 @@ export class ReportComponent {
 
       this.dataSource = new MatTableDataSource<ReportItem>(Array.from(dataMap.values()));
       this.getTotals('All');
+      this.findMissingReports(filters, reportDates);
     } catch (error) {
       this.errors.update(errors => [...errors, `Failed to generate report. ${error}`]);
     }
@@ -93,32 +105,19 @@ export class ReportComponent {
     this.loading = false;
   }
 
-  private aggregateReportItems(reportItems: ReportItem[], dataMap: Map<string, ReportItem>): void {
+  private findMissingReports(filters: Filters, reportDates: Map<string, Date>): void {
     try {
-      reportItems.forEach((item) => {
-        // empty UPCs are department totals, we don't need those for now
-        if (!item['UPC']) return;
+      let expectedReportDate = filters.startDate;
 
-        const upc = item['UPC'];
-        const totalQty = Number(item['Total Qty']);
-        const totalAmount = Number(item['Total Amount']);
-        const existingItem = dataMap.get(upc);
-
-        if (existingItem) {
-          existingItem['Total Qty'] += !isNaN(totalQty) ? totalQty : 0;
-          existingItem['Total Amount'] += !isNaN(totalAmount) ? totalAmount : 0;
-          return;
+      while (!this.dateService.compareDates(expectedReportDate, filters.endDate)) {
+        const expectedReportLocalDate = expectedReportDate.toLocaleDateString();
+        if (!reportDates.has(expectedReportLocalDate)) {
+          this.errors.update(errors => [...errors, `Missing report for ${expectedReportLocalDate}.`]);
         }
-
-        dataMap.set(upc, {
-          UPC: upc,
-          Name: item['Name'],
-          'Total Qty': !isNaN(totalQty) ? totalQty : 0,
-          'Total Amount': !isNaN(totalAmount) ? totalAmount : 0
-        });
-      });
+        expectedReportDate = this.dateService.addDays(expectedReportDate, 1);
+      }
     } catch (error) {
-     this.errors.update(errors => [...errors, `Failed to aggregate report items. ${error}`]);
+      this.errors.update(errors => [...errors, `Failed missing report check. ${error}`]);
     }
   }
 
@@ -137,7 +136,7 @@ export class ReportComponent {
       );
     } catch (error) {
       this.total = defaultTotal;
-      this.errors.update(errors => [...errors, `Failed to calculating totals. ${error}`]);
+      this.errors.update(errors => [...errors, `Failed to calculate totals. ${error}`]);
     }
   }
 }
