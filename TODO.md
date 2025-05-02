@@ -1,11 +1,10 @@
 - update oauth client to not be only testing or keep it always in testing if there are no restrictions
 - update redirect urls for oauth client
-- should great a gcloud account for the business and have its own email, so its not all cluttered.
+- should creat a gcloud account for the business and have its own email, so its not all cluttered.
   - make sure to remove projects from billing
   - remove billing account
   - remove unneeded projects
-- create nice errors
- - create a banner with failed messages
+- add error banner with missing daily reports
 - create interfaces
 - add guards for login and update routing
 - add github actions pipelins
@@ -19,3 +18,5 @@
 - add interceptor or oauth provider has allowed urls that it intercepts `node_modules/angular-oauth2-oidc/oauth-module.config.d.ts`
 - add nav bar
 - logout doesn't work but do we need it?
+- filter validation, no more than 100 days
+- how many reports calculated

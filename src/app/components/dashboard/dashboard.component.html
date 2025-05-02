@@ -1,4 +1,11 @@
 <div class="flex-container flex-direction-column">
   <app-filters class="flex-item" (filters)="filters = $event"></app-filters>
-  <app-report class="flex-item" *ngIf="filters" [filters]="filters"></app-report>
+  <mat-card appearance="outlined" class="card-error flex-item" *ngIf="errors().length > 0">
+    <mat-card-content>
+      <mat-list role="list">
+        <mat-list-item role="listitem" *ngFor="let error of errors()">{{ error }}</mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+  <app-report class="flex-item" *ngIf="filters" [filters]="filters" [(errors)]="errors"></app-report>
 </div>

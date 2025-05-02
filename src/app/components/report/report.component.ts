@@ -1,5 +1,5 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, effect, input, viewChild } from '@angular/core';
+import { Component, effect, input, model, viewChild } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -32,6 +32,7 @@ export class ReportComponent {
   public total?: ReportItem;
   public dataSource = new MatTableDataSource<ReportItem>([]);
   public filters = input.required<Filters>();
+  public errors = model.required<string[]>();
 
   private paginator = viewChild(MatPaginator);
   private sort = viewChild(MatSort);
@@ -62,62 +63,81 @@ export class ReportComponent {
   private async getReport(filters: Filters): Promise<void> {
     this.progress = 0;
     this.loading = true;
-
-    const emails = await this.gmailService.getEmails(filters);
+    this.errors.set([]);
     const dataMap = new Map<string, ReportItem>();
 
-    for (const [index, message] of emails.messages.entries()) {
-      this.progress = ((index + 1) / emails.resultSizeEstimate) * 100;
+    try {
+      const emails = await this.gmailService.getEmails(filters);
 
-      const messageDetails = await this.gmailService.getMessageDetails(message.id);
-      const attachment = await this.gmailService.getAttachment(messageDetails);
-      const csvText = atob(attachment.data.replace(/-/g, '+').replace(/_/g, '/'));
-      const reportItems = await this.csvParserService.parseCsv(csvText);
+      for (const [index, message] of emails.messages.entries()) {
+        try {
+          this.progress = ((index + 1) / emails.resultSizeEstimate) * 100;
 
-      this.aggregateReportItems(reportItems, dataMap);
+          const messageDetails = await this.gmailService.getMessage(message.id);
+          const attachment = await this.gmailService.getAttachment(messageDetails);
+          const csvText = atob(attachment.data.replace(/-/g, '+').replace(/_/g, '/'));
+          const reportItems = await this.csvParserService.parseCsv(csvText);
+
+          this.aggregateReportItems(reportItems, dataMap);
+        } catch (error) {
+          this.errors.update(errors => [...errors, `Failed to process message ID: "${message.id}". ${error}`]);
+        }
+      }
+
+      this.dataSource = new MatTableDataSource<ReportItem>(Array.from(dataMap.values()));
+      this.getTotals('All');
+    } catch (error) {
+      this.errors.update(errors => [...errors, `Failed to generate report. ${error}`]);
     }
-
-    this.dataSource = new MatTableDataSource<ReportItem>(Array.from(dataMap.values()));
-    this.getTotals('All');
 
     this.loading = false;
   }
 
   private aggregateReportItems(reportItems: ReportItem[], dataMap: Map<string, ReportItem>): void {
-    reportItems.forEach((item) => {
-      // empty UPCs are department totals, we don't need those for now
-      if (!item['UPC']) return;
+    try {
+      reportItems.forEach((item) => {
+        // empty UPCs are department totals, we don't need those for now
+        if (!item['UPC']) return;
 
-      const upc = item['UPC'];
-      const totalQty = Number(item['Total Qty']);
-      const totalAmount = Number(item['Total Amount']);
-      const existingItem = dataMap.get(upc);
+        const upc = item['UPC'];
+        const totalQty = Number(item['Total Qty']);
+        const totalAmount = Number(item['Total Amount']);
+        const existingItem = dataMap.get(upc);
 
-      if (existingItem) {
-        existingItem['Total Qty'] += !isNaN(totalQty) ? totalQty : 0;
-        existingItem['Total Amount'] += !isNaN(totalAmount) ? totalAmount : 0;
-        return;
-      }
+        if (existingItem) {
+          existingItem['Total Qty'] += !isNaN(totalQty) ? totalQty : 0;
+          existingItem['Total Amount'] += !isNaN(totalAmount) ? totalAmount : 0;
+          return;
+        }
 
-      dataMap.set(upc, {
-        UPC: upc,
-        Name: item['Name'],
-        'Total Qty': !isNaN(totalQty) ? totalQty : 0,
-        'Total Amount': !isNaN(totalAmount) ? totalAmount : 0
+        dataMap.set(upc, {
+          UPC: upc,
+          Name: item['Name'],
+          'Total Qty': !isNaN(totalQty) ? totalQty : 0,
+          'Total Amount': !isNaN(totalAmount) ? totalAmount : 0
+        });
       });
-    });
+    } catch (error) {
+     this.errors.update(errors => [...errors, `Failed to aggregate report items. ${error}`]);
+    }
   }
 
   private getTotals(type: 'All' | 'Filtered') {
-    this.total = this.dataSource.filteredData.reduce(
-      (acc, item) => {
-        const totalQty = Number(item['Total Qty']);
-        const totalAmount = Number(item['Total Amount']);
-        acc['Total Qty'] += !isNaN(totalQty) ? totalQty : 0;
-        acc['Total Amount'] += !isNaN(totalAmount) ? totalAmount : 0;
-        return acc;
-      },
-      { UPC: `${type} Total`, Name: '', 'Total Qty': 0, 'Total Amount': 0 }
-    );
+    const defaultTotal = { UPC: `${type} Total`, Name: '', 'Total Qty': 0, 'Total Amount': 0 };
+    try {
+      this.total = this.dataSource.filteredData.reduce(
+        (acc, item) => {
+          const totalQty = Number(item['Total Qty']);
+          const totalAmount = Number(item['Total Amount']);
+          acc['Total Qty'] += !isNaN(totalQty) ? totalQty : 0;
+          acc['Total Amount'] += !isNaN(totalAmount) ? totalAmount : 0;
+          return acc;
+        },
+        defaultTotal
+      );
+    } catch (error) {
+      this.total = defaultTotal;
+      this.errors.update(errors => [...errors, `Failed to calculating totals. ${error}`]);
+    }
   }
 }
