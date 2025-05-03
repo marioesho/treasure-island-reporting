@@ -115,7 +115,7 @@ export class ReportComponent {
     try {
       let expectedReportDate = filters.startDate;
 
-      while (!this.utilityService.compareDates(expectedReportDate, filters.endDate)) {
+      while (!this.utilityService.isDatesEqual(expectedReportDate, filters.endDate)) {
         const expectedReportLocalDate = expectedReportDate.toLocaleDateString();
         if (!reportDates.has(expectedReportLocalDate)) {
           this.errors.update(errors => [...errors, `Missing report for ${expectedReportLocalDate}.`]);

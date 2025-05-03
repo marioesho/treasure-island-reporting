@@ -13,7 +13,7 @@ export class UtilityService {
     return newDate;
   }
 
-  public compareDates(date1: Date, date2: Date): boolean {
+  public isDatesEqual(date1: Date, date2: Date): boolean {
     return date1.getFullYear() === date2.getFullYear() &&
       date1.getMonth() === date2.getMonth() &&
       date1.getDate() === date2.getDate();
@@ -24,6 +24,6 @@ export class UtilityService {
   }
 
   public formatCurrency(value: number | string): string {
-    return formatCurrency(Number(value), this.locale, '$', 'USD', 'symbol-narrow');
+    return formatCurrency(Number(value), this.locale, '$', 'USD');
   }
 }

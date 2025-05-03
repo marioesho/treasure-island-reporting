@@ -6,11 +6,17 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatButtonModule } from '@angular/material/button';
 
 import { Filters } from '@models';
+import { UtilityService } from '@services';
 
 @Component({
   selector: 'app-filters',
   providers: [provideNativeDateAdapter()],
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatDatepickerModule, MatButtonModule],
+  imports: [
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatButtonModule
+  ],
   templateUrl: './filters.component.html',
   styleUrl: './filters.component.scss'
 })
@@ -19,7 +25,15 @@ export class FiltersComponent {
 
   public filterForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  public get maxDate(): Date | null {
+    const startDate = this.filterForm.get('startDate')?.value;
+
+    if (!startDate) return null;
+
+    return this.utilityService.addDays(startDate, 99);
+  }
+
+  constructor(private fb: FormBuilder, private utilityService: UtilityService) {
     this.filterForm = this.fb.group({
       startDate: [null, Validators.required],
       endDate: [null, Validators.required]

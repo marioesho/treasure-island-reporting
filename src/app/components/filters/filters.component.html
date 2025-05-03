@@ -2,30 +2,31 @@
   <div class="flex-container flex-direction-row">
     <div class="flex-item">
       <mat-form-field>
-        <mat-label>Enter a date range</mat-label>
-        <mat-date-range-input [rangePicker]="picker">
+        <mat-label>Enter a report range</mat-label>
+        <mat-date-range-input [rangePicker]="picker" [max]="maxDate">
           <input matStartDate placeholder="Start date" formControlName="startDate">
           <input matEndDate placeholder="End date" formControlName="endDate">
         </mat-date-range-input>
-        <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+        <mat-hint>MM/DD/YYYY - MM/DD/YYYY</mat-hint>
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-date-range-picker #picker></mat-date-range-picker>
 
-        @if (filterForm.controls['startDate'].hasError('matDatepickerParse')) {
-          <mat-error>Invalid start date</mat-error>
-        } @else if (filterForm.controls['startDate'].hasError('required')) {
-          <mat-error>Start date is required</mat-error>
-        }
-        @if (filterForm.controls['endDate'].hasError('matDatepickerParse')) {
-          <mat-error>Invalid end date</mat-error>
-        } @else if (filterForm.controls['endDate'].hasError('required')) {
-          <mat-error>End date is required</mat-error>
+        @if (filterForm.hasError('matDatepickerParse', 'startDate') || filterForm.hasError('matDatepickerParse', 'endDate')) {
+          <mat-error>Invalid date</mat-error>
+        } @else if (filterForm.hasError('required', 'startDate') || filterForm.hasError('required', 'endDate')) {
+          <mat-error>Date range is required</mat-error>
+        } @else if (filterForm.hasError('matDatepickerMax', 'startDate') || filterForm.hasError('matDatepickerMax', 'endDate')) {
+          <mat-error>Date range cannot exceed 100 days</mat-error>
         }
       </mat-form-field>
     </div>
 
     <div class="flex-item">
-      <button mat-raised-button color="primary" type="submit" [disabled]="filterForm.invalid">Submit</button>
+      <button mat-raised-button color="primary" type="submit">Submit</button>
+    </div>
+
+    <div class="flex-item">
+      <button mat-button color="accent" type="reset">Reset</button>
     </div>
   </div>
 </form>

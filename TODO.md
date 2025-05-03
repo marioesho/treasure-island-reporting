@@ -13,6 +13,5 @@
 - add interceptor or oauth provider has allowed urls that it intercepts `node_modules/angular-oauth2-oidc/oauth-module.config.d.ts`
 - add nav bar
   - logout doesn't work but do we need it?
-- filter validation, no more than 100 days
 - count of how many reports calculated
 - should probably use date in filename instead of email date for finding missing reports
