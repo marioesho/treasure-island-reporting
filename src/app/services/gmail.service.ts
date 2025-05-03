@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
-import { Filters, Emails, Message, Attachment } from '@models';
+import { Filters, Emails, Message, Attachment, MessagePart } from '@models';
 import { AuthGoogleService } from './auth-google.service';
 import { ErrorHandlerService } from './error-handler.service';
 import { UtilityService } from './utility.service';
@@ -64,17 +64,9 @@ export class GmailService {
    * @returns
    * @apidoc https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages.attachments/get
    */
-  async getAttachment(message: Message): Promise<Attachment> {
+  async getAttachment(messageId: string, part: MessagePart): Promise<Attachment> {
     try {
-      const attachmentPart = message.payload.parts.find(part => part.filename && part.filename.startsWith('Sales_History') && part.filename.endsWith('.csv'));
-
-      if (!attachmentPart) throw new Error('No Sales_History CSV attachment found.');
-
-      const attachmentId = attachmentPart.body?.attachmentId;
-
-      if (!attachmentId) throw new Error('No attachment ID found.');
-
-      const apiUrl = `https://www.googleapis.com/gmail/v1/users/me/messages/${message.id}/attachments/${attachmentId}`;
+      const apiUrl = `https://www.googleapis.com/gmail/v1/users/me/messages/${messageId}/attachments/${part.body.attachmentId}`;
       const headers = { Authorization: `Bearer ${this.authGoogleService.getAccessToken}` };
 
       const messagePartBody = await firstValueFrom(this.http.get<Attachment>(apiUrl, { headers }))

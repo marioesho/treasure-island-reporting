@@ -72,7 +72,7 @@ export class ReportComponent {
     this.loading = true;
     this.errors.set([]);
     const dataMap = new Map<string, ReportItem>();
-    const reportDates = new Map<string, Date>();
+    const reportDates = new Set<string>();
 
     try {
       const emails = await this.gmailService.getEmails(filters);
@@ -82,16 +82,18 @@ export class ReportComponent {
           this.progress = ((index + 1) / emails.resultSizeEstimate) * 100;
 
           const messageDetails = await this.gmailService.getMessageDetails(message.id);
-          const attachment = await this.gmailService.getAttachment(messageDetails);
+          const messagePart = messageDetails.payload.parts.find(part => part.filename && part.filename.startsWith('Sales_History') && part.filename.endsWith('.csv'));
 
-          const messageDate = new Date(Number(messageDetails.internalDate));
-          const messageLocalDate = messageDate.toLocaleDateString();
-          if (reportDates.has(messageLocalDate)) {
-            this.errors.update(errors => [...errors, `Multiple reports found for ${messageLocalDate}. Ignoring duplicate...`]);
+          if (!messagePart?.body?.attachmentId) throw new Error('No Sales_History CSV attachment found.');
+
+          const reportDate = this.getReportDate(messagePart.filename);
+          if (reportDates.has(reportDate)) {
+            this.errors.update(errors => [...errors, `Multiple reports found for ${reportDate}. Ignoring duplicate...`]);
             continue;
           }
-          reportDates.set(messageLocalDate, messageDate);
+          reportDates.add(reportDate);
 
+          const attachment = await this.gmailService.getAttachment(messageDetails.id, messagePart);
           const csvText = atob(attachment.data.replace(/-/g, '+').replace(/_/g, '/'));
           const reportItems = await this.reportService.parseCsv(csvText);
 
@@ -111,11 +113,11 @@ export class ReportComponent {
     this.loading = false;
   }
 
-  private findMissingReports(filters: Filters, reportDates: Map<string, Date>): void {
+  private findMissingReports(filters: Filters, reportDates: Set<string>): void {
     try {
       let expectedReportDate = filters.startDate;
 
-      while (!this.utilityService.isDatesEqual(expectedReportDate, filters.endDate)) {
+      while (expectedReportDate <= filters.endDate) {
         const expectedReportLocalDate = expectedReportDate.toLocaleDateString();
         if (!reportDates.has(expectedReportLocalDate)) {
           this.errors.update(errors => [...errors, `Missing report for ${expectedReportLocalDate}.`]);
@@ -124,6 +126,19 @@ export class ReportComponent {
       }
     } catch (error) {
       this.errors.update(errors => [...errors, `Failed missing report check. ${error}`]);
+    }
+  }
+
+  private getReportDate(filename: string): string {
+    const match = filename.match(/Sales_History_(\w+)_(\d{2}),_(\d{4})\.csv/);
+
+    if (match) {
+      const [, month, day, year] = match;
+      const monthIndex = new Date(`${month} 1, 2000`).getMonth();
+
+      return new Date(Number(year), monthIndex, Number(day)).toLocaleDateString();
+    } else {
+      throw new Error('Invalid filename date format.');
     }
   }
 

@@ -14,4 +14,3 @@
 - add nav bar
   - logout doesn't work but do we need it?
 - count of how many reports calculated
-- should probably use date in filename instead of email date for finding missing reports
