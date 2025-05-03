@@ -1,4 +1,4 @@
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, signal } from '@angular/core';
 
 import { Filters } from '@models';
@@ -12,6 +12,7 @@ import { MatListModule } from '@angular/material/list';
   imports: [
     NgFor,
     NgIf,
+    NgTemplateOutlet,
     FiltersComponent,
     ReportComponent,
     MatCardModule,
@@ -22,5 +23,6 @@ import { MatListModule } from '@angular/material/list';
 })
 export class DashboardComponent {
   public filters?: Filters;
+  public additionalInfo = signal<string[]>([]);
   public errors = signal<string[]>([]);
 }

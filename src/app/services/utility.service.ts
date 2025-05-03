@@ -13,6 +13,14 @@ export class UtilityService {
     return newDate;
   }
 
+  public isDateInRange(date: Date, startDate: Date, endDate: Date): boolean {
+    const time = date.getTime();
+    const startTime = startDate.getTime();
+    const endTime = endDate.getTime();
+
+    return time >= startTime && time <= endTime;
+  }
+
   public formatDate(date: Date, format: string): string {
     return formatDate(date, format, this.locale);
   }
