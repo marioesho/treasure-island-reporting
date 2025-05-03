@@ -1,10 +1,10 @@
 import { Inject, Injectable, LOCALE_ID } from '@angular/core';
-import { formatDate } from '@angular/common';
+import { formatCurrency, formatDate } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DateService {
+export class UtilityService {
   constructor(@Inject(LOCALE_ID) private locale: string) {}
 
   public addDays(date: Date, days: number): Date {
@@ -21,5 +21,9 @@ export class DateService {
 
   public formatDate(date: Date, format: string): string {
     return formatDate(date, format, this.locale);
+  }
+
+  public formatCurrency(value: number | string): string {
+    return formatCurrency(Number(value), this.locale, '$', 'USD', 'symbol-narrow');
   }
 }

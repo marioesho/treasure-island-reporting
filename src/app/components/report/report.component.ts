@@ -8,7 +8,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 import { Filters, ReportItem } from '@models';
-import { GmailService, ReportService, DateService } from '@services';
+import { GmailService, ReportService, UtilityService } from '@services';
 
 @Component({
   selector: 'app-report',
@@ -40,7 +40,7 @@ export class ReportComponent {
   constructor(
     private gmailService: GmailService,
     private reportService: ReportService,
-    private dateService: DateService
+    private utilityService: UtilityService
   ) {
     effect(() => this.getReport(this.filters()));
     effect(() => {
@@ -49,7 +49,7 @@ export class ReportComponent {
     });
   }
 
-  applyFilter(event: Event) {
+  public applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
     this.dataSource.filter = filterValue;
     this.dataSource.paginator?.firstPage();
@@ -59,6 +59,12 @@ export class ReportComponent {
     } else {
       this.getTotals('All');
     }
+  }
+
+  public getColumnValue(reportItem: ReportItem | undefined, displayedColumn: keyof ReportItem): string | number {
+    if (!reportItem) return '';
+
+    return displayedColumn === 'Total Amount' ? this.utilityService.formatCurrency(reportItem[displayedColumn]) : reportItem[displayedColumn];
   }
 
   private async getReport(filters: Filters): Promise<void> {
@@ -109,12 +115,12 @@ export class ReportComponent {
     try {
       let expectedReportDate = filters.startDate;
 
-      while (!this.dateService.compareDates(expectedReportDate, filters.endDate)) {
+      while (!this.utilityService.compareDates(expectedReportDate, filters.endDate)) {
         const expectedReportLocalDate = expectedReportDate.toLocaleDateString();
         if (!reportDates.has(expectedReportLocalDate)) {
           this.errors.update(errors => [...errors, `Missing report for ${expectedReportLocalDate}.`]);
         }
-        expectedReportDate = this.dateService.addDays(expectedReportDate, 1);
+        expectedReportDate = this.utilityService.addDays(expectedReportDate, 1);
       }
     } catch (error) {
       this.errors.update(errors => [...errors, `Failed missing report check. ${error}`]);

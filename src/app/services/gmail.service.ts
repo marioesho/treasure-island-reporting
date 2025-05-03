@@ -5,7 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { Filters, Emails, Message, Attachment } from '@models';
 import { AuthGoogleService } from './auth-google.service';
 import { ErrorHandlerService } from './error-handler.service';
-import { DateService } from './date.service';
+import { UtilityService } from './utility.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,7 @@ export class GmailService {
   constructor(
     private authGoogleService: AuthGoogleService,
     private http: HttpClient,
-    private dateService: DateService,
+    private utilityService: UtilityService,
     private errorHandlerService: ErrorHandlerService) {}
 
   /**
@@ -24,8 +24,8 @@ export class GmailService {
    */
   async getEmails(filters: Filters): Promise<Emails> {
     try {
-      const after = this.dateService.formatDate(filters.startDate, 'YYYY/MM/dd');
-      const before = this.dateService.formatDate(this.dateService.addDays(filters.endDate, 1), 'YYYY/MM/dd');
+      const after = this.utilityService.formatDate(filters.startDate, 'YYYY/MM/dd');
+      const before = this.utilityService.formatDate(this.utilityService.addDays(filters.endDate, 1), 'YYYY/MM/dd');
       const params = new HttpParams({
         fromObject: {
           // can use in:drafts if needing to search within folder
