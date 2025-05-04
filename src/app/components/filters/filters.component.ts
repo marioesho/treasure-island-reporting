@@ -30,11 +30,13 @@ export class FiltersComponent implements OnDestroy {
   private subscriptions = new Subscription();
 
   public get maxDate(): Date | null {
+    const dateNow = new Date(Date.now());
     const startDate = this.filterForm.get('startDate')?.value;
 
-    if (!startDate) return null;
+    if (!startDate) return dateNow;
 
-    return this.utilityService.addDays(startDate, 99);
+    const maxDate = this.utilityService.addDays(startDate, 99);
+    return maxDate > dateNow ? dateNow : maxDate;
   }
 
   constructor(

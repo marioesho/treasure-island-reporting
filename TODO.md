@@ -10,4 +10,3 @@
 - create directive flex container
 - add interceptor or oauth provider has allowed urls that it intercepts `node_modules/angular-oauth2-oidc/oauth-module.config.d.ts`
 - login/logout flow doesn't work
-- can't go past today's date when searching emails
