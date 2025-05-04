@@ -7,4 +7,4 @@
 
 
 - add github actions pipeline
-- login/logout flow doesn't work
+- submit should not show report if invalid form

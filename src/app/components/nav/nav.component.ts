@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
 
 import { FlexItemDirective } from '@directives';
 import { AuthGoogleService } from '@services';
@@ -12,6 +13,7 @@ import { AuthGoogleService } from '@services';
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
+    MatTooltip,
     FlexItemDirective
   ],
   templateUrl: './nav.component.html',

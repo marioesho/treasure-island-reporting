@@ -34,8 +34,6 @@ export class AuthGoogleService {
   }
 
   logout() {
-    this.oAuthService.revokeTokenAndLogout();
-    this.oAuthService.logOut();
-    this.router.navigateByUrl('/');
+    this.oAuthService.revokeTokenAndLogout().then(() => window.location.assign('/'));
   }
 }
