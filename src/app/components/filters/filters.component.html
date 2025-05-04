@@ -1,5 +1,5 @@
 <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
-  <div class="flex-container flex-direction-row">
+  <div class="flex-container {{ flexDirection }}">
     <div class="flex-item">
       <mat-form-field>
         <mat-label>Enter a report range</mat-label>
@@ -22,11 +22,14 @@
     </div>
 
     <div class="flex-item">
-      <button mat-raised-button color="primary" type="submit">Submit</button>
-    </div>
-
-    <div class="flex-item">
-      <button mat-button color="accent" type="reset">Reset</button>
+      <div class="flex-container flex-direction-row">
+        <div class="flex-item">
+          <button mat-raised-button color="primary" type="submit">Submit</button>
+        </div>
+        <div class="flex-item">
+          <button mat-button color="accent" type="reset">Reset</button>
+        </div>
+      </div>
     </div>
   </div>
 </form>

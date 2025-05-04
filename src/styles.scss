@@ -9,19 +9,22 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .flex-container {
   display: flex;
+  gap: 25px;
 
   &.flex-direction-column {
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    gap: 50px;
   }
 
   &.flex-direction-row {
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    gap: 25px;
+  }
+
+  &.flex-container-large {
+    gap: 50px;
   }
 
   .flex-item {

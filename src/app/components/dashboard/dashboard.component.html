@@ -1,8 +1,10 @@
-<div class="flex-container flex-direction-column">
+<div class="flex-container flex-container-large flex-direction-column">
   <app-filters class="flex-item" (filters)="filters = $event"></app-filters>
-  <ng-container [ngTemplateOutlet]="listTemplate" [ngTemplateOutletContext]="{ list: additionalInfo() }"></ng-container>
-  <ng-container [ngTemplateOutlet]="listTemplate" [ngTemplateOutletContext]="{ list: errors(), additionalClasses: 'card-error' }"></ng-container>
-  <app-report class="flex-item" *ngIf="filters" [filters]="filters" [(additionalInfo)]="additionalInfo" [(errors)]="errors"></app-report>
+  <div class="flex-container flex-direction-column">
+    <ng-container [ngTemplateOutlet]="listTemplate" [ngTemplateOutletContext]="{ list: additionalInfo() }"></ng-container>
+    <ng-container [ngTemplateOutlet]="listTemplate" [ngTemplateOutletContext]="{ list: errors(), additionalClasses: 'card-error' }"></ng-container>
+    <app-report class="flex-item" *ngIf="filters" [filters]="filters" [(additionalInfo)]="additionalInfo" [(errors)]="errors"></app-report>
+  </div>
 </div>
 
 <ng-template #listTemplate let-list="list" let-additionalClasses="additionalClasses">
