@@ -1,9 +1,9 @@
 <div appFlexContainer flexSize="large">
   <app-filters appFlexItem (filters)="filters = $event"></app-filters>
-  <div appFlexItem appFlexContainer>
+  <div appFlexItem appFlexContainer *ngIf="filters">
     <ng-container [ngTemplateOutlet]="listTemplate" [ngTemplateOutletContext]="{ list: additionalInfo() }"></ng-container>
     <ng-container [ngTemplateOutlet]="listTemplate" [ngTemplateOutletContext]="{ list: errors(), additionalClasses: 'card-error' }"></ng-container>
-    <app-report appFlexItem *ngIf="filters" [filters]="filters" [(additionalInfo)]="additionalInfo" [(errors)]="errors"></app-report>
+    <app-report appFlexItem [filters]="filters" [(additionalInfo)]="additionalInfo" [(errors)]="errors"></app-report>
   </div>
 </div>
 

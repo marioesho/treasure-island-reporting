@@ -25,7 +25,7 @@ import { UtilityService } from '@services';
   styleUrl: './filters.component.scss'
 })
 export class FiltersComponent implements OnDestroy {
-  public filters = output<Filters>();
+  public filters = output<Filters | undefined>();
   public filterForm: FormGroup;
   public formFlexDirection: FlexDirection = 'row';
 
@@ -63,7 +63,11 @@ export class FiltersComponent implements OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  onSubmit() {
-    this.filters.emit(this.filterForm.value);
+  setFilters(event: Event) {
+    if (event.type === 'reset') {
+      this.filters.emit(undefined);
+    } else if (event.type === 'submit' && this.filterForm.valid) {
+      this.filters.emit(this.filterForm.value);
+    }
   }
 }

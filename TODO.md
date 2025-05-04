@@ -7,4 +7,3 @@
 
 
 - add github actions pipeline
-- submit should not show report if invalid form
