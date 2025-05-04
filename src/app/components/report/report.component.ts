@@ -6,6 +6,8 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatCardModule } from '@angular/material/card';
+import { MatListModule } from '@angular/material/list';
 
 import { Filters, ReportItem } from '@models';
 import { GmailService, ReportService, UtilityService } from '@services';
@@ -20,7 +22,9 @@ import { GmailService, ReportService, UtilityService } from '@services';
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatCardModule,
+    MatListModule
   ],
   templateUrl: './report.component.html',
   styleUrl: './report.component.scss'
@@ -29,7 +33,8 @@ export class ReportComponent {
   public loading = true;
   public progress = 0;
   public displayedColumns: (keyof ReportItem)[] = ['UPC', 'Name', 'Total Qty', 'Total Amount'];
-  public total?: ReportItem;
+  public totals?: ReportItem;
+  public departmentTotals?: ReportItem[];
   public dataSource = new MatTableDataSource<ReportItem>([]);
   public filters = input.required<Filters>();
   public additionalInfo = model.required<string[]>();
@@ -65,7 +70,7 @@ export class ReportComponent {
   public getColumnValue(reportItem: ReportItem | undefined, displayedColumn: keyof ReportItem): string | number {
     if (!reportItem) return '';
 
-    return displayedColumn === 'Total Amount' ? this.utilityService.formatCurrency(reportItem[displayedColumn]) : reportItem[displayedColumn];
+    return displayedColumn === 'Total Amount' ? this.utilityService.formatCurrency(reportItem[displayedColumn]) : reportItem[displayedColumn] ?? '';
   }
 
   private async getReport(filters: Filters): Promise<void> {
@@ -73,7 +78,8 @@ export class ReportComponent {
     this.loading = true;
     this.additionalInfo.set([]);
     this.errors.set([]);
-    const dataMap = new Map<string, ReportItem>();
+    const reportItemsMap = new Map<string, ReportItem>();
+    const departmentTotalsMap = new Map<string, ReportItem>();
     const reportDates = new Set<string>();
 
     try {
@@ -105,13 +111,14 @@ export class ReportComponent {
           const csvText = atob(attachment.data.replace(/-/g, '+').replace(/_/g, '/'));
           const reportItems = await this.reportService.parseCsv(csvText);
 
-          this.reportService.aggregateReportItems(reportItems, dataMap);
+          this.reportService.aggregateReportItems(reportItems, reportItemsMap, departmentTotalsMap);
         } catch (error) {
           this.errors.update(errors => [...errors, `Failed to process message ID: "${message.id}". ${error}`]);
         }
       }
 
-      this.dataSource = new MatTableDataSource<ReportItem>(Array.from(dataMap.values()));
+      this.dataSource = new MatTableDataSource<ReportItem>(Array.from(reportItemsMap.values()));
+      this.departmentTotals = Array.from(departmentTotalsMap.values());
       this.getTotals('All');
       this.findMissingReports(filters, reportDates);
     } catch (error) {
@@ -157,10 +164,10 @@ export class ReportComponent {
     }
   }
 
-  private getTotals(type: 'All' | 'Filtered') {
-    const defaultTotal = { UPC: `${type} Total`, Name: '', 'Total Qty': 0, 'Total Amount': 0 };
+  private getTotals(type: 'All' | 'Filtered'): void {
+    const defaultTotals = { UPC: `${type} Total`, Name: '', 'Total Qty': 0, 'Total Amount': 0 };
     try {
-      this.total = this.dataSource.filteredData.reduce(
+      this.totals = this.dataSource.filteredData.reduce(
         (acc, item) => {
           const totalQty = Number(item['Total Qty']);
           const totalAmount = Number(item['Total Amount']);
@@ -168,11 +175,11 @@ export class ReportComponent {
           acc['Total Amount'] += !isNaN(totalAmount) ? totalAmount : 0;
           return acc;
         },
-        defaultTotal
+        defaultTotals
       );
     } catch (error) {
-      this.total = defaultTotal;
-      this.errors.update(errors => [...errors, `Failed to calculate totals. ${error}`]);
+      this.totals = defaultTotals;
+      this.errors.update(errors => [...errors, `Failed to calculate item totals. ${error}`]);
     }
   }
 }

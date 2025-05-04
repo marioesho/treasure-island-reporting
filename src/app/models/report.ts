@@ -1,5 +1,5 @@
 export interface ReportItem {
-  UPC: string;
+  UPC?: string;
   Name: string;
   'Total Qty': number;
   'Total Amount': number;

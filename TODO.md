@@ -8,7 +8,6 @@
 
 - add github actions pipelins
 - create directive flex container
-- should I do onpush change detection?
-- maybe add department totals as seperate
 - add interceptor or oauth provider has allowed urls that it intercepts `node_modules/angular-oauth2-oidc/oauth-module.config.d.ts`
 - login/logout flow doesn't work
+- can't go past today's date when searching emails

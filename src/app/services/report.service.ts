@@ -23,17 +23,16 @@ export class ReportService {
     });
   }
 
-  public aggregateReportItems(reportItems: ReportItem[], dataMap: Map<string, ReportItem>): void {
+  public aggregateReportItems(reportItems: ReportItem[], reportItemsMap: Map<string, ReportItem>, departmentTotals: Map<string, ReportItem>): void {
     try {
       reportItems.forEach((item) => {
-        const upc = item['UPC'];
-
-        // empty UPCs are department totals, we don't need those for now
-        if (!upc) return;
+        const isDepartment = !item.UPC;
+        const key = isDepartment ? item.Name : item.UPC!;
+        const map = isDepartment ? departmentTotals : reportItemsMap;
 
         const totalQty = Number(item['Total Qty']);
         const totalAmount = Number(item['Total Amount']);
-        const existingItem = dataMap.get(upc);
+        const existingItem = map.get(key);
 
         if (existingItem) {
           existingItem['Total Qty'] += !isNaN(totalQty) ? totalQty : 0;
@@ -41,9 +40,9 @@ export class ReportService {
           return;
         }
 
-        dataMap.set(upc, {
-          UPC: upc,
-          Name: item['Name'],
+        map.set(key, {
+          UPC: item.UPC,
+          Name: item.Name,
           'Total Qty': !isNaN(totalQty) ? totalQty : 0,
           'Total Amount': !isNaN(totalAmount) ? totalAmount : 0
         });
