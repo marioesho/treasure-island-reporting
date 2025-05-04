@@ -2,3 +2,17 @@
   background-color: #f8d7da;
   border-color: #f5c6cb;
 }
+
+:host ::ng-deep {
+  .dashboard-list {
+    .mat-mdc-list-item {
+      height: auto;
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+
+    .mdc-list-item__content > .mdc-list-item__primary-text {
+      white-space: normal;
+    }
+  }
+}

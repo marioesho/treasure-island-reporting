@@ -10,7 +10,7 @@
 <ng-template #listTemplate let-list="list" let-additionalClasses="additionalClasses">
   <mat-card class="flex-item {{additionalClasses}}" appearance="outlined" *ngIf="list.length > 0">
     <mat-card-content>
-      <mat-list role="list">
+      <mat-list class="dashboard-list" role="list">
         <mat-list-item role="listitem" *ngFor="let item of list">{{ item }}</mat-list-item>
       </mat-list>
     </mat-card-content>
