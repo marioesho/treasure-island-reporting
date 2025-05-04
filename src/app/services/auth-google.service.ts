@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
+
+import { environment } from '@environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthGoogleService {
-  constructor(private oAuthService: OAuthService, private router: Router) {
+  constructor(private oAuthService: OAuthService) {
     this.oAuthService.configure({
       issuer: 'https://accounts.google.com',
-      redirectUri: window.location.origin,
+      redirectUri: `${window.location.origin}${environment.baseUrl}`,
       clientId: '420616304322-eh5hmo8b3ftpj6edpp0j4emdjtht8o0f.apps.googleusercontent.com',
       scope: 'openid profile email https://www.googleapis.com/auth/gmail.readonly',
       strictDiscoveryDocumentValidation: false,
@@ -34,6 +35,6 @@ export class AuthGoogleService {
   }
 
   logout() {
-    this.oAuthService.revokeTokenAndLogout().then(() => window.location.assign('/'));
+    this.oAuthService.revokeTokenAndLogout().then(() => window.location.assign(environment.baseUrl));
   }
 }
