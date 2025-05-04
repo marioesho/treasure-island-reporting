@@ -9,6 +9,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 
+import { AdditionalStylesDirective, FlexContainerModule } from '@directives';
 import { Filters, ReportItem } from '@models';
 import { GmailService, ReportService, UtilityService } from '@services';
 
@@ -24,7 +25,9 @@ import { GmailService, ReportService, UtilityService } from '@services';
     MatPaginatorModule,
     MatProgressBarModule,
     MatCardModule,
-    MatListModule
+    MatListModule,
+    FlexContainerModule,
+    AdditionalStylesDirective
   ],
   templateUrl: './report.component.html',
   styleUrl: './report.component.scss'

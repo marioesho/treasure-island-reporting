@@ -1,14 +1,14 @@
-<div class="flex-container flex-container-large flex-direction-column">
-  <app-filters class="flex-item" (filters)="filters = $event"></app-filters>
-  <div class="flex-container flex-direction-column">
+<div appFlexContainer flexSize="large">
+  <app-filters appFlexItem (filters)="filters = $event"></app-filters>
+  <div appFlexItem appFlexContainer>
     <ng-container [ngTemplateOutlet]="listTemplate" [ngTemplateOutletContext]="{ list: additionalInfo() }"></ng-container>
     <ng-container [ngTemplateOutlet]="listTemplate" [ngTemplateOutletContext]="{ list: errors(), additionalClasses: 'card-error' }"></ng-container>
-    <app-report class="flex-item" *ngIf="filters" [filters]="filters" [(additionalInfo)]="additionalInfo" [(errors)]="errors"></app-report>
+    <app-report appFlexItem *ngIf="filters" [filters]="filters" [(additionalInfo)]="additionalInfo" [(errors)]="errors"></app-report>
   </div>
 </div>
 
 <ng-template #listTemplate let-list="list" let-additionalClasses="additionalClasses">
-  <mat-card class="flex-item {{additionalClasses}}" appearance="outlined" *ngIf="list.length > 0">
+  <mat-card appFlexItem [class]="additionalClasses" appearance="outlined" *ngIf="list.length > 0">
     <mat-card-content>
       <mat-list class="dashboard-list" role="list">
         <mat-list-item role="listitem" *ngFor="let item of list">{{ item }}</mat-list-item>

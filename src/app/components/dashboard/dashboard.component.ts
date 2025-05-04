@@ -1,11 +1,12 @@
 import { NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, signal } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
+import { MatListModule } from '@angular/material/list';
 
+import { FlexContainerModule } from '@directives';
 import { Filters } from '@models';
 import { FiltersComponent } from '../filters/filters.component';
 import { ReportComponent } from '../report/report.component';
-import { MatCardModule } from '@angular/material/card';
-import { MatListModule } from '@angular/material/list';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,7 +17,8 @@ import { MatListModule } from '@angular/material/list';
     FiltersComponent,
     ReportComponent,
     MatCardModule,
-    MatListModule
+    MatListModule,
+    FlexContainerModule
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'

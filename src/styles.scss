@@ -2,36 +2,3 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
-.width-100 {
-  width: 100%;
-}
-
-.flex-container {
-  display: flex;
-  gap: 25px;
-
-  &.flex-direction-column {
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-  }
-
-  &.flex-direction-row {
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-  }
-
-  &.flex-container-large {
-    gap: 50px;
-  }
-
-  .flex-item {
-    flex: 0 1 auto;
-  }
-}
-
-.spacer {
-  flex: 1 1 auto;
-}

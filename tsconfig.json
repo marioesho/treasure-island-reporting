@@ -18,6 +18,7 @@
     "target": "ES2022",
     "module": "ES2022",
     "paths": {
+      "@directives": ["./src/app/directives/index.ts"],
       "@guards": ["./src/app/guards/index.ts"],
       "@models": ["./src/app/models/index.ts"],
       "@services": ["./src/app/services/index.ts"]

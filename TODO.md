@@ -6,6 +6,5 @@
   - remove unneeded projects
 
 
-- add github actions pipelins
-- create directive flex container
+- add github actions pipeline
 - login/logout flow doesn't work

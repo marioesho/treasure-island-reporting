@@ -3,11 +3,17 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
+import { FlexItemDirective } from '@directives';
 import { AuthGoogleService } from '@services';
 
 @Component({
   selector: 'app-nav',
-  imports: [MatToolbarModule, MatButtonModule, MatIconModule],
+  imports: [
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    FlexItemDirective
+  ],
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.scss'
 })

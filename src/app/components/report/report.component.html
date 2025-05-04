@@ -2,9 +2,9 @@
   <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
 </div>
 <ng-template #report>
-  <div class="flex-container flex-direction-column">
-    <div class="flex-item">
-      <mat-form-field class="width-100" subscriptSizing="dynamic">
+  <div appFlexContainer>
+    <div appFlexItem>
+      <mat-form-field appAdditionalStyles width="100%" subscriptSizing="dynamic">
         <mat-label>Filter</mat-label>
         <input matInput (keyup)="applyFilter($event)" placeholder="Search Report" #input>
       </mat-form-field>
@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    <mat-card class="flex-item" appearance="outlined">
+    <mat-card appFlexItem appearance="outlined">
       <mat-card-header>
         <mat-card-title>Department Totals</mat-card-title>
       </mat-card-header>
