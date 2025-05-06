@@ -100,12 +100,12 @@ export class ReportComponent {
           const {reportDate, reportLocalDate} = this.getReportDate(messagePart.filename);
 
           if (!this.utilityService.isDateInRange(reportDate, filters.startDate, filters.endDate)) {
-            this.errors.update(errors => [...errors, `Found report, ${reportLocalDate}, outside the selected date range. Ignoring...`]);
+            // this.additionalInfo.update(info => [...info, `Found report, ${reportLocalDate}, outside the selected date range. Ignoring...`]);
             continue;
           }
 
           if (reportDates.has(reportLocalDate)) {
-            this.errors.update(errors => [...errors, `Multiple reports found for ${reportLocalDate}. Ignoring...`]);
+            this.additionalInfo.update(info => [...info, `Multiple reports found for ${reportLocalDate}. Ignoring...`]);
             continue;
           }
           reportDates.add(reportLocalDate);
@@ -147,7 +147,7 @@ export class ReportComponent {
         expectedReportDate = this.utilityService.addDays(expectedReportDate, 1);
       }
 
-      this.additionalInfo.update(info => [...info, `Found ${reportCount} reports for the selected date range.`]);
+      this.additionalInfo.update(info => [...info, `Processed ${reportCount} reports for the selected date range.`]);
     } catch (error) {
       this.errors.update(errors => [...errors, `Failed missing report check. ${error}`]);
     }

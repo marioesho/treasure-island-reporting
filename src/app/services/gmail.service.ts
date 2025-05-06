@@ -23,7 +23,7 @@ export class GmailService {
   async getEmails(filters: Filters): Promise<Emails> {
     try {
       const after = this.utilityService.formatDate(filters.startDate, 'YYYY/MM/dd');
-      const before = this.utilityService.formatDate(this.utilityService.addDays(filters.endDate, 1), 'YYYY/MM/dd');
+      const before = this.utilityService.formatDate(this.utilityService.addDays(filters.endDate, 2), 'YYYY/MM/dd');
       const params = new HttpParams({
         fromObject: {
           // can use in:drafts if needing to search within folder

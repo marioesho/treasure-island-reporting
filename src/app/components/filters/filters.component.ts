@@ -7,7 +7,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatButtonModule } from '@angular/material/button';
 
-import { FlexContainerModule, FlexDirection } from '@directives';
+import {
+  AdditionalStylesDirective,
+  FlexContainerModule,
+  FlexDirection
+} from '@directives';
 import { Filters } from '@models';
 import { UtilityService } from '@services';
 
@@ -19,7 +23,8 @@ import { UtilityService } from '@services';
     MatFormFieldModule,
     MatDatepickerModule,
     MatButtonModule,
-    FlexContainerModule
+    FlexContainerModule,
+    AdditionalStylesDirective
   ],
   templateUrl: './filters.component.html',
   styleUrl: './filters.component.scss'
@@ -28,6 +33,7 @@ export class FiltersComponent implements OnDestroy {
   public filters = output<Filters | undefined>();
   public filterForm: FormGroup;
   public formFlexDirection: FlexDirection = 'row';
+  public dateRangeWidth?: string;
 
   private subscriptions = new Subscription();
 
@@ -49,8 +55,10 @@ export class FiltersComponent implements OnDestroy {
       .subscribe(result => {
         if (result.matches) {
           this.formFlexDirection = 'column';
+          this.dateRangeWidth = '100%';
         } else {
           this.formFlexDirection = 'row';
+          this.dateRangeWidth = undefined;
         }
       });
     this.filterForm = this.fb.group({

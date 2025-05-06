@@ -1,13 +1,13 @@
 <form [formGroup]="filterForm" (ngSubmit)="setFilters($event)" (reset)="setFilters($event)">
   <div appFlexContainer [flexDirection]="formFlexDirection">
     <div appFlexItem>
-      <mat-form-field>
-        <mat-label>Enter email search range</mat-label>
+      <mat-form-field appAdditionalStyles [width]="dateRangeWidth">
+        <mat-label>Enter report range</mat-label>
         <mat-date-range-input [rangePicker]="picker" [max]="maxDate">
           <input matStartDate placeholder="Start date" formControlName="startDate">
           <input matEndDate placeholder="End date" formControlName="endDate">
         </mat-date-range-input>
-        <mat-hint>MM/DD/YYYY - MM/DD/YYYY</mat-hint>
+        <mat-hint>MM/DD/YYYY - MM/DD/YYYY<br />Searches by email date received</mat-hint>
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-date-range-picker #picker></mat-date-range-picker>
 
