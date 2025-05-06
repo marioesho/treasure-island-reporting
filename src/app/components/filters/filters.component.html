@@ -7,12 +7,12 @@
           <input matStartDate placeholder="Start date" formControlName="startDate">
           <input matEndDate placeholder="End date" formControlName="endDate">
         </mat-date-range-input>
-        <mat-hint>MM/DD/YYYY - MM/DD/YYYY<br />Searches by email date received</mat-hint>
+        <mat-hint>Searches by email date received</mat-hint>
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-date-range-picker #picker></mat-date-range-picker>
 
         @if (filterForm.hasError('matDatepickerParse', 'startDate') || filterForm.hasError('matDatepickerParse', 'endDate')) {
-          <mat-error>Invalid date</mat-error>
+          <mat-error>Invalid date, format must be MM/DD/YYYY</mat-error>
         } @else if (filterForm.hasError('required', 'startDate') || filterForm.hasError('required', 'endDate')) {
           <mat-error>Date range is required</mat-error>
         } @else if (filterForm.hasError('matDatepickerMax', 'startDate') || filterForm.hasError('matDatepickerMax', 'endDate')) {

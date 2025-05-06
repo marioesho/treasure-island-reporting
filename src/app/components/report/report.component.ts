@@ -112,7 +112,7 @@ export class ReportComponent {
           }
 
           if (reportDates.has(reportLocalDate)) {
-            this.additionalInfo.update(info => [...info, `Multiple reports found for ${reportLocalDate}. Ignoring...`]);
+            this.additionalInfo.update(info => [...info, `Multiple reports found for ${reportLocalDate}. Ignoring duplicates...`]);
             continue;
           }
           reportDates.add(reportLocalDate);
