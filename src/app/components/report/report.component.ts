@@ -88,6 +88,13 @@ export class ReportComponent {
     try {
       const emails = await this.gmailService.getEmails(filters);
 
+      if (!emails?.messages) {
+        this.additionalInfo.update(info => [...info, `No reports found for the selected date range.`]);
+        this.loading = false;
+        return;
+      }
+
+
       for (const [index, message] of emails.messages.entries()) {
         try {
           this.progress = ((index + 1) / emails.resultSizeEstimate) * 100;
